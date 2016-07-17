@@ -18,7 +18,7 @@ Because I didn't feel the need to copy the whole codebase. All I needed was to e
 
 - What can I do with forester?
 
-Everything you can do with rubytree, possibly in a more intention-revealing way, plus arbitrary, configurable aggregations on trees. Read the specs for more details.
+Everything you can do with rubytree, possibly in a more intention-revealing way, plus arbitrary, configurable aggregations on trees. Simple examples can be found in the tests.
 
 ## Installation
 
