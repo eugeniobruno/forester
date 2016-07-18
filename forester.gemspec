@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ['lib']
 
+  s.required_ruby_version = '>= 1.9.2'
+
   s.add_runtime_dependency 'rubytree', ['~> 0.9']
   s.add_runtime_dependency 'enzymator', ['~> 0.0']
 

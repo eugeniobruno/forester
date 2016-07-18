@@ -19,7 +19,7 @@ module Forester
     end
 
     def each_level
-      breadth_each.slice_when { |prev_node, next_node| prev_node.level < next_node.level }
+      breadth_each.slice_before { |node| !node.is_last_sibling? }
     end
 
     def get(field, &block)

@@ -38,7 +38,7 @@ root:
         children:
         - name: First node of level 4
           value: 8
-        - name: Second child of level 3
+        - name: Second node of level 4
           value: 9
           strings:
             - Could forester handle trees with hundreds of levels?
