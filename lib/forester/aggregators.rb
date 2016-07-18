@@ -1,10 +1,6 @@
 module Forester
   module Aggregators
 
-    def aggregate(config)
-      Enzymator::Aggregation.new(config).run_on(self)
-    end
-
     def values_by_subtree_of_level(options = {})
       default_options = {
         level:                    1,
@@ -17,7 +13,7 @@ module Forester
 
       options = default_options.merge(options)
 
-      Enzymator::Aggregation.new({
+      aggregation_config = {
         null_result:       lambda { Hash.new },
         initial_clusters:  lambda { |tree| tree.nodes_of_level(options[:level]) },
         map:               lambda do |node|
@@ -35,7 +31,13 @@ module Forester
         reduce_each:       lambda { |acum, value| Array(acum).concat(Array(value)) },
         reduce:            lambda { |prev, group, result| prev.merge( { group => result } ) },
 
-      }).run_on(self, options)
+      }
+
+      aggregated(aggregation_config, options)
+    end
+
+    def aggregated(config, options = {})
+      Enzymator::Aggregation.new(config).run_on(self, options)
     end
 
   end
