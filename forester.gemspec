@@ -6,7 +6,7 @@ require 'forester/version'
 Gem::Specification.new do |s|
   s.name        = 'forester'
   s.version     = Forester::Version
-  s.date        = '2016-07-17'
+  s.date        = '2016-07-19'
   s.summary     = "A gem to represent and interact with tree data structures"
   s.description = "Based on rubytree and enzymator, this gem lets you build trees and run queries against them."
   s.authors     = ["Eugenio Bruno"]

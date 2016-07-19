@@ -19,7 +19,13 @@ module Forester
     end
 
     def each_level
-      breadth_each.slice_before { |node| !node.is_last_sibling? }
+      Enumerator.new do |yielder|
+        level = [self]
+        begin
+          yielder << level
+          level = level.flat_map(&:children)
+        end until level.empty?
+      end
     end
 
     def get(field, &block)
