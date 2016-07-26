@@ -6,9 +6,9 @@ require 'forester/version'
 Gem::Specification.new do |s|
   s.name        = 'forester'
   s.version     = Forester::Version
-  s.date        = '2016-07-24'
+  s.date        = '2016-07-26'
   s.summary     = "A gem to represent and interact with tree data structures"
-  s.description = "Based on rubytree and enzymator, this gem lets you build trees and run queries against them."
+  s.description = "Based on rubytree, this gem lets you build trees and run queries against them."
   s.authors     = ["Eugenio Bruno"]
   s.email       = 'eugeniobruno@gmail.com'
   s.homepage    = 'http://rubygems.org/gems/forester'
@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.0.0'
 
   s.add_runtime_dependency 'rubytree', ['0.9.7']
-  s.add_runtime_dependency 'enzymator', ['1.0.0']
 
   s.add_development_dependency 'rake', ['~> 11.2']
   s.add_development_dependency 'minitest', ['~> 5.9']

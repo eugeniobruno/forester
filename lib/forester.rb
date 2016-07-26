@@ -1,5 +1,4 @@
 require 'tree'
-require 'enzymator'
 require 'securerandom'
 require 'yaml'
 
