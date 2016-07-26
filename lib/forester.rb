@@ -3,6 +3,8 @@ require 'securerandom'
 require 'yaml'
 
 require 'forester/aggregators'
+require 'forester/mutators'
+require 'forester/views'
 require 'forester/tree_node'
 require 'forester/tree_factory'
 require 'forester/node_content'

@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'forester'
 
-class TreeNodeTest < Minitest::Test
+class TestTreeNode < Minitest::Test
 
   def test_tree_node
 

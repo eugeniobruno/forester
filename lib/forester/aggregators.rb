@@ -3,7 +3,7 @@ module Forester
 
     def own_and_descendants(options = {})
       default_options = {
-        field: 'name',
+        field: :name,
         if_field_missing: -> (c) { [] },
       }
 

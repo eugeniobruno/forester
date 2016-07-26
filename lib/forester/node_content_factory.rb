@@ -10,7 +10,7 @@ module Forester
       private
 
       def without_key(hash, key)
-        hash.reject { |k, _| k == key }
+        hash.reject { |k, _| k.to_s == key.to_s }
       end
 
     end
