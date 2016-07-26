@@ -21,9 +21,9 @@ module Forester
 
     def method_missing(name, *args, &block)
       if @hash.has_key?(name)
-        @hash.fetch(name)
+        @hash[name]
       elsif block_given?
-        yield self
+        yield args.fetch(0, {yield_to: self})[:yield_to]
       else
         raise ArgumentError.new("the node \"#{self.name}\" does not have any \"#{name}\"")
       end

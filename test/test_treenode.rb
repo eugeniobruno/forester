@@ -64,9 +64,7 @@ class TestTreeNode < Minitest::Test
     assert_equal 1, found_nodes.length
 
     actual_names = found_nodes.flat_map do |node|
-      node.own_and_descendants({
-        field: 'strings'
-      })
+      node.own_and_descendants('strings')
     end
 
     assert_equal expected_names, actual_names

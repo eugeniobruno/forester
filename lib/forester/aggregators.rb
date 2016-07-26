@@ -1,16 +1,24 @@
 module Forester
   module Aggregators
 
-    def own_and_descendants(options = {})
+    def with_ancestry(options = {})
       default_options = {
-        field: :name,
-        if_field_missing: -> (c) { [] },
+        include_root: true,
+        include_self: true,
+        descending: true
       }
-
       options = default_options.merge(options)
 
+      ancestors = self.parentage           || []
+      ancestors = ancestors[0...-1]        unless options[:include_root]
+      ancestors = ancestors.unshift(self)  if     options[:include_self]
+      if options[:descending] then ancestors.reverse else ancestors end
+    end
+
+    def own_and_descendants(field_name, &if_field_missing)
+      if_field_missing = -> (node) { [] } unless block_given?
       flat_map do |node|
-        Array(node.get(options[:field], &options[:if_field_missing]))
+        Array(node.get(field_name, &if_field_missing))
       end
     end
 
@@ -33,7 +41,7 @@ module Forester
 
       found_nodes.flat_map do |node|
         if options[:include_descendants]
-          node.own_and_descendants({ field: options[:values_key] })
+          node.own_and_descendants(options[:values_key])
         else
           node.get(options[:values_key])
         end
@@ -46,29 +54,22 @@ module Forester
         level:                    1,
         group_field:              'name',
         aggregation_field:        'value',
-        if_field_missing:         -> (c) { [] },
+        if_field_missing:         -> (node) { [] },
         include_ancestry_in_keys: false, # if false, with_root is ignored
         with_root:                false,
       }
-
       options = default_options.merge(options)
 
       nodes_of_level(options[:level]).each_with_object({}) do |node, hash|
 
         key_nodes = if options[:include_ancestry_in_keys]
-                      node.ancestry(options[:with_root], true)
+                      node.with_ancestry({ include_root: options[:with_root] })
                     else
                       node
                     end
 
         key = key_nodes.map { |kn| kn.get(options[:group_field]) { |n| n.object_id } }
-
-        value = node.own_and_descendants(
-          {
-            field: options[:aggregation_field],
-            if_field_missing: options[:if_field_missing]
-          }
-        )
+        value = node.own_and_descendants(options[:aggregation_field], &options[:if_field_missing])
 
         hash[key] = value
       end
