@@ -1,6 +1,10 @@
 module Forester
   module Aggregators
 
+    def nodes_with(content_key, content_values)
+      each_node.select { |node| not ( Array(node.get(content_key) { :no_match }) & Array(content_values) ).empty? }
+    end
+
     def with_ancestry(options = {})
       default_options = {
         include_root: true,
@@ -22,28 +26,27 @@ module Forester
       end
     end
 
-    def values_by_field(options)
+    def search(options)
       default_options = {
-        field_to_search:     'name',
-        search_keyword:      :missing_search_keyword,
-        values_key:          :missing_values_key,
-        include_descendants: false,
-        assume_uniqueness:   false
+        single_node: true,
+        by_field:    :name,
+        keywords:    :missing_search_keywords,
+        then_get:    :nodes,
+        of_subtree:  true,
       }
       options = default_options.merge(options)
 
-      found_nodes = nodes_with(options[:field_to_search], options[:search_keyword])
+      found_nodes = nodes_with(options[:by_field], options[:keywords])
 
-      # When assuming that node names are unique,
-      # if more than one node was found,
-      # discard all but the first one
-      found_nodes = found_nodes.slice(0, 1) if options[:assume_uniqueness]
+      found_nodes = found_nodes.slice(0, 1) if options[:single_node]
+
+      return found_nodes if options[:then_get] == :nodes
 
       found_nodes.flat_map do |node|
-        if options[:include_descendants]
-          node.own_and_descendants(options[:values_key])
+        if options[:of_subtree]
+          node.own_and_descendants(options[:then_get])
         else
-          node.get(options[:values_key])
+          node.get(options[:then_get])
         end
       end
 

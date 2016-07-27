@@ -21,10 +21,6 @@ module Forester
       end
     end
 
-    def nodes_with(content_key, content_value)
-      each_node.select { |node| Array(node.get(content_key) { :no_match }).include? content_value }
-    end
-
     alias_method :each_node, :breadth_each
 
     def get(field, &block)

@@ -33,27 +33,38 @@ class TestTreeNode < Minitest::Test
 
 
     expected_value = [7]
-    actual_value = tree.values_by_field({
-      field_to_search: 'name',
-      search_keyword: 'Second node of level 3',
-      values_key: 'value'
+    actual_value = tree.search({
+      by_field:   'name',
+      keywords:   'Second node of level 3',
+      then_get:   'value',
+      of_subtree: false,
+    })
+    assert_equal expected_value, actual_value
+
+    expected_value = [7]
+    actual_value = tree.search({
+      by_field:   'name',
+      keywords:   ['Second node of level 3', 'Not present name'],
+      then_get:   'value',
+      of_subtree: false,
     })
     assert_equal expected_value, actual_value
 
     expected_values = [7, 8, 9]
-    actual_values = tree.values_by_field({
-      field_to_search: 'name',
-      search_keyword: 'Second node of level 3',
-      values_key: 'value',
-      include_descendants: true
+    actual_values = tree.search({
+      by_field:   'name',
+      keywords:   'Second node of level 3',
+      then_get:   'value',
+      of_subtree: true,
     })
     assert_equal expected_values, actual_values
 
     expected_value = [7]
-    actual_value = tree.values_by_field({
-      field_to_search: 'strings',
-      search_keyword: 'A hidden secret lies in the deepest leaves...',
-      values_key: 'value'
+    actual_value = tree.search({
+      by_field:   'strings',
+      keywords:   'A hidden secret lies in the deepest leaves...',
+      then_get:   'value',
+      of_subtree: false
     })
     assert_equal expected_value, actual_value
 
