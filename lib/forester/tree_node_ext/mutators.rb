@@ -3,7 +3,7 @@ module Forester
 
     def add_field!(name, definition)
       value = if definition.respond_to? :call then definition.call(self) else definition end
-      content.set!(name, value)
+      put!(name, value)
     end
 
     def add_field_to_subtree!(name, definition)

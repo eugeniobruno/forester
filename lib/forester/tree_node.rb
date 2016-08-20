@@ -1,6 +1,9 @@
 module Forester
   class TreeNode < Tree::TreeNode
 
+    extend Forwardable
+    def_delegators :@content, :fields, :has?, :put!, :add!, :del!
+
     include Aggregators
     include Mutators
     include Views
@@ -23,12 +26,20 @@ module Forester
 
     alias_method :each_node, :breadth_each
 
-    def get(field, &block)
-      content.public_send(field, { yield_to: self }, &block)
+    def get(field, default = :raise_error, &block)
+      if has?(field)
+        content.get(field)
+      elsif block_given?
+        yield self
+      elsif default != :raise_error
+        default
+      else
+        raise ArgumentError.new("the node \"#{name}\" does not have \"#{field}\"")
+      end
     end
 
-    def field_names
-      content.field_names
+    def name
+      content.get(:name, super)
     end
 
     def contents

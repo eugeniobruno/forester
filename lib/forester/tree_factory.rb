@@ -21,19 +21,19 @@ module Forester
 
       def from_hash(hash, children_key, uid = SecureRandom.uuid)
         name = uid
-        content = NodeContentFactory.from_hash(hash, children_key)
+        content = NodeContent::Factory.from_hash(hash, children_key)
         TreeNode.new(name, content)
       end
 
       private
 
       def fetch_indifferently(hash, key, default = nil)
-        [key.to_sym, key.to_s].map { |k| hash[k] }.compact.first || default || hash.fetch(root_key)
+        [key, key.to_s, key.to_s.to_sym].uniq.map { |k| hash[k] }.compact.first || default || hash.fetch(root_key)
       end
 
       def with_children(tree_node, children, children_key)
         children.each do |child|
-          child_node = TreeFactory.from_hash(child, children_key)
+          child_node     = from_hash(child, children_key)
           child_children = fetch_indifferently(child, children_key, []) # nth level
 
           tree_node << with_children(child_node, child_children, children_key)
