@@ -35,7 +35,10 @@ module Forester
         }
         options = default_options.merge(options)
 
-        super(symbolize_if(options[:symbolize_key]).call(key), value)
+        convert_key = ->(k) { k }
+        convert_key = ->(k) { k.to_sym } if options[:symbolize_key]
+
+        super(convert_key.call(key), value)
       end
       alias_method :put!, :[]=
 
@@ -57,8 +60,9 @@ module Forester
         }
         options = default_options.merge(options)
 
-        convert_key = stringify_if options[:stringify_keys]
-        convert_key = symbolize_if options[:symbolize_keys]
+        convert_key = ->(k) { k }
+        convert_key = ->(k) { k.to_s }   if options[:stringify_keys]
+        convert_key = ->(k) { k.to_sym } if options[:symbolize_keys]
 
         each_with_object({}) do |(k, v), hash|
           if equivs(k).any? { |eq| options[:fields_to_include].include?(eq) }
@@ -79,22 +83,6 @@ module Forester
 
       def best(key)
         equivs(key).find { |k| has_key?(k, false) } || key
-      end
-
-      def stringify_if(bool)
-        if bool
-          ->(k) { k.to_s }
-        else
-          ->(k) { k }
-        end
-      end
-
-      def symbolize_if(bool)
-        if bool
-          ->(k) { k.to_sym }
-        else
-          ->(k) { k }
-        end
       end
 
     end

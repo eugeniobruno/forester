@@ -10,5 +10,10 @@ module Forester
       each_node { |node| node.add_field!(name, definition) }
     end
 
+    def remove_levels_past!(last_level_to_keep)
+      nodes_of_level(last_level_to_keep).map(&:remove_all!)
+      self
+    end
+
   end
 end
