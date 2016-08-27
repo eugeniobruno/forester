@@ -7,12 +7,12 @@ class TestViews < Minitest::Test
 
   include SimpleTreeHelper
 
-  def test_nested_hash
+  def test_as_root_hash
     hash = (YAML.load(File.read(PATH_TO_SIMPLE_TREE)))
     add_empty_children_keys(hash['root'])
 
     expected = hash['root']
-    actual   = @@tree.as_nested_hash({ stringify_keys: true })
+    actual   = @@tree.as_root_hash({ stringify_keys: true })
 
     assert_equal expected, actual
   end

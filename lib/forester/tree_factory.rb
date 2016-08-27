@@ -34,7 +34,7 @@ module Forester
         real_root  = fetch_indifferently(hash, options[:root_key])
 
         max_level = options[:max_level]
-        max_level = -2 if  [:last, nil].include? max_level
+        max_level = -2 if max_level == :last
 
         tree = with_children(dummy_root, [real_root], options[:children_key], max_level + 1).first_child
         tree.detached_subtree_copy

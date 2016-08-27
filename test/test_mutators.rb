@@ -13,19 +13,19 @@ class TestMutators < Minitest::Test
 
   def test_add_field
 
-    @tree.add_field_to_subtree!('number_four', 4)
+    @tree.add_field!('number_four', 4)
 
     assert_equal 4, @tree.get(:number_four)
     assert_equal 4, @tree.get('number_four')
 
-    @tree.add_field_to_subtree!(:number_five, 5)
+    @tree.add_field!(:number_five, 5)
 
     assert_equal 5, @tree.get(:number_five)
     assert_equal 5, @tree.get('number_five')
 
     number_one = 1
 
-    @tree.add_field_to_subtree!(:number_six, -> (node) { node.get(:number_five) + number_one })
+    @tree.add_field!(:number_six, -> (node) { node.get(:number_five) + number_one })
 
     assert_equal 6, @tree.get(:number_six)
 
