@@ -46,5 +46,16 @@ module Forester
       each_node.map(&:content)
     end
 
+    def same_as?(other)
+      return false unless content == other.content
+      return false unless    size == other.size
+      nodes_of_other = other.each_node.to_a
+      each_node.with_index do |n, i|
+        next if i == 0
+        return false unless n.same_as?(nodes_of_other[i])
+      end
+      true
+    end
+
   end
 end
