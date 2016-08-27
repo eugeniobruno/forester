@@ -1,18 +1,20 @@
 require 'minitest/autorun'
 require 'forester'
 
+require_relative './simple_tree_helper'
+
 class TestViews < Minitest::Test
 
-  def test_views
+  include SimpleTreeHelper
 
-    path_to_trees = "#{File.dirname(__FILE__)}/trees"
-    tree = Forester::TreeFactory.from_yaml_file("#{path_to_trees}/simple_tree.yml")
-
-    hash = (YAML.load(File.read("#{path_to_trees}/simple_tree.yml")))
+  def test_nested_hash
+    hash = (YAML.load(File.read(PATH_TO_SIMPLE_TREE)))
     add_empty_children_keys(hash['root'])
 
-    assert_equal hash['root'], tree.as_nested_hash({ stringify_keys: true })
+    expected = hash['root']
+    actual   = @@tree.as_nested_hash({ stringify_keys: true })
 
+    assert_equal expected, actual
   end
 
   private
