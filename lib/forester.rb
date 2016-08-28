@@ -4,6 +4,7 @@ require 'securerandom'
 require 'yaml'
 
 require 'forester/tree_node_ext/aggregators'
+require 'forester/tree_node_ext/validators'
 require 'forester/tree_node_ext/mutators'
 require 'forester/tree_node_ext/views'
 

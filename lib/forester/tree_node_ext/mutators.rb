@@ -2,18 +2,26 @@ module Forester
   module Mutators
 
     def add_field!(name, definition, options = {})
+      add_fields!([{ name: name, definition: definition }], options)
+    end
+
+    def add_fields!(fields, options = {})
       default_options = {
         subtree: true
       }
       options = default_options.merge(options)
 
-      if options[:subtree]
-        each_node do |node|
-          node.add_field!(name, definition, options.merge({ subtree: false }))
-        end
-      else
-        value = definition.respond_to?(:call) ? definition.call(self) : definition
-        put!(name, value)
+      target_nodes = options[:subtree] ? each_node : [self]
+
+      target_nodes.each { |node| node.add_fields_to_root!(fields) }
+    end
+
+    def add_fields_to_root!(fields)
+      fields.each do |field|
+        value = field[:definition]
+        value = value.call(self) if value.respond_to?(:call)
+
+        put!(field[:name], value)
       end
     end
 

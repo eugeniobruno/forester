@@ -5,6 +5,7 @@ module Forester
     def_delegators :@content, :fields, :has?, :put!, :add!, :del!
 
     include Aggregators
+    include Validators
     include Mutators
     include Views
 
@@ -38,8 +39,8 @@ module Forester
         content.get(field)
       elsif block_given?
         yield self
-      elsif default != :raise
-        default
+      elsif options[:default] != :raise
+        options[:default]
       else
         raise ArgumentError.new("the node \"#{name}\" does not have \"#{field}\"")
       end

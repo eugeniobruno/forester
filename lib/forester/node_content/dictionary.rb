@@ -59,6 +59,7 @@ module Forester
           symbolize_keys:    false
         }
         options = default_options.merge(options)
+        options[:fields_to_include] = fields if options[:fields_to_include] == :all
 
         convert_key = ->(k) { k }
         convert_key = ->(k) { k.to_s }   if options[:stringify_keys]

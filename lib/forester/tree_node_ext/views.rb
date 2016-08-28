@@ -3,7 +3,7 @@ module Forester
 
     def as_root_hash(options = {})
       default_options = {
-        fields_to_include: fields, # all of them
+        fields_to_include: :all,
         max_level:         :last,
         children_key:      :children,
         stringify_keys:    false,
