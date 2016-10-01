@@ -25,6 +25,37 @@ module Forester
       end
     end
 
+    def delete_values!(field, values, options = {})
+      default_options = {
+        percolate: false,
+        subtree:   true
+      }
+      options = default_options.merge(options)
+
+      target_nodes = options[:subtree] ? each_node : [self]
+
+      target_nodes.each { |node| node.delete_values_from_root!(field, values, options[:percolate]) }
+    end
+
+    def delete_values_from_root!(field, values, percolate)
+      return unless has?(field)
+      current_value = get(field)
+      return unless current_value.is_a?(Array)
+
+      new_value =
+        if percolate
+          current_value & Array(values)
+        else
+          current_value - Array(values)
+        end
+
+      put!(field, new_value)
+    end
+
+    def percolate_values!(field, values, options = {})
+      delete_values!(field, values, options.merge(percolate: true))
+    end
+
     def remove_levels_past!(last_level_to_keep)
       nodes_of_level(last_level_to_keep).map(&:remove_all!)
       self

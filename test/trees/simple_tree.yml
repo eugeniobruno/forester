@@ -9,6 +9,10 @@ root:
     value: 1
     color: Green
     tone: Dark
+    tags:
+      - First tag
+      - Second tag
+      - Third tag
     children:
     - name: First node of level 2
       value: 2
@@ -32,6 +36,9 @@ root:
       children:
       - name: First node of level 3
         value: 6
+        tags:
+          - Second tag
+          - Third tag
         strings:
           - Reached level 3
           - It's dark
@@ -47,6 +54,8 @@ root:
         - name: Second node of level 4
           value: 9
           color: Yellow
+          tags:
+            - Third tag
           strings:
             - Could forester handle trees with hundreds of levels?
             - Maybe.
