@@ -46,10 +46,6 @@ module Forester
       end
     end
 
-    def name
-      content.get(:name, super)
-    end
-
     def contents
       each_node.map(&:content)
     end
