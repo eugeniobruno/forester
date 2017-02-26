@@ -23,7 +23,7 @@ module Forester
         if max_level == 0
           []
         else
-          next_options = options.merge({ max_level: max_level - 1 })
+          next_options = options.merge(max_level: max_level - 1)
           children.map { |node| node.as_root_hash(next_options) }
         end
 

@@ -12,7 +12,7 @@ class TestViews < Minitest::Test
     add_empty_children_keys(hash['root'])
 
     expected = hash['root']
-    actual   = @@tree.as_root_hash({ stringify_keys: true })
+    actual   = @@tree.as_root_hash(stringify_keys: true)
 
     assert_equal expected, actual
   end

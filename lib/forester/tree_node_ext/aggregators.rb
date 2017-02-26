@@ -29,9 +29,9 @@ module Forester
       }
       options = default_options.merge(options)
 
-      ancestors = self.parentage           || []
-      ancestors = ancestors[0...-1]        unless options[:include_root]
-      ancestors = ancestors.unshift(self)  if     options[:include_self]
+      ancestors = self.parentage          || []
+      ancestors = ancestors[0...-1]       unless options[:include_root]
+      ancestors = ancestors.unshift(self) if     options[:include_self]
 
       options[:descending] ? ancestors.reverse : ancestors
     end
@@ -46,12 +46,12 @@ module Forester
       }
       options = default_options.merge(options)
 
-      found_nodes = nodes_with(options[:by_field], options[:keywords], { single: options[:single_node] } )
+      found_nodes = nodes_with(options[:by_field], options[:keywords], single: options[:single_node] )
 
       return found_nodes if options[:then_get] == :nodes
 
       found_nodes.flat_map do |node|
-        node.get(options[:then_get], { subtree: options[:subtree] })
+        node.get(options[:then_get], subtree: options[:subtree])
       end
     end
 
@@ -69,7 +69,7 @@ module Forester
       nodes_of_level(options[:level]).each_with_object({}) do |node, hash|
         key =
           if options[:ancestry_in_keys]
-            nodes_for_key = node.with_ancestry({ include_root: options[:with_root] })
+            nodes_for_key = node.with_ancestry(include_root: options[:with_root])
             nodes_for_key.map { |n| get_or_id(n, options[:group_field]) }
           else
             get_or_id(node, options[:group_field])

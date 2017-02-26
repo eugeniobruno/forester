@@ -27,7 +27,7 @@ class TestTreeFactory < Minitest::Test
   protected
 
   def new_with_max_level(hash, max_level)
-    Forester::TreeFactory.from_root_hash(hash['root'], { max_level: max_level })
+    Forester::TreeFactory.from_root_hash(hash['root'], max_level: max_level)
   end
 
 end
