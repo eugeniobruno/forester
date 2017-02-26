@@ -6,12 +6,12 @@ require 'forester/version'
 Gem::Specification.new do |s|
   s.name        = 'forester'
   s.version     = Forester::Version
-  s.date        = '2016-10-01'
+  s.date        = '2017-02-26'
   s.summary     = "A gem to represent and interact with tree data structures"
   s.description = "Based on rubytree, this gem lets you build trees and run queries against them."
   s.authors     = ["Eugenio Bruno"]
   s.email       = 'eugeniobruno@gmail.com'
-  s.homepage    = 'http://rubygems.org/gems/forester'
+  s.homepage    = 'https://github.com/eugeniobruno/forester'
   s.license     = 'MIT'
 
   s.files         = `git ls-files`.split($/)
