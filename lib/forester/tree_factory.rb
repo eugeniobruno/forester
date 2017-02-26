@@ -4,21 +4,10 @@ module Forester
     class << self
 
       def from_yaml_file(file, options = {})
-        default_options = {
-          max_level: :last
-        }
-        options = default_options.merge(options)
-
-        from_hash_with_root_key(YAML.load_file(file))
+        from_hash_with_root_key(YAML.load_file(file), options)
       end
 
       def from_root_hash(hash, options = {})
-        default_options = {
-          max_level:    :last,
-          children_key: :children
-        }
-        options = default_options.merge(options)
-
         from_hash_with_root_key({ root: hash }, options)
       end
 
