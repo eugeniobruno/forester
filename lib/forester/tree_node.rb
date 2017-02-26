@@ -61,5 +61,11 @@ module Forester
       true
     end
 
+    protected
+
+    def as_array(object)
+      [object].flatten(1)
+    end
+
   end
 end

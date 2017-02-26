@@ -44,9 +44,9 @@ module Forester
 
       new_value =
         if percolate
-          current_value & Array(values)
+          current_value & as_array(values)
         else
-          current_value - Array(values)
+          current_value - as_array(values)
         end
 
       put!(field, new_value)

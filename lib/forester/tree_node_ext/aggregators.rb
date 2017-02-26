@@ -4,7 +4,7 @@ module Forester
     def own_and_descendants(field, &if_missing)
       if_missing = -> (node) { [] } unless block_given?
 
-      flat_map { |node| Array(node.get(field, &if_missing)) }
+      flat_map { |node| as_array(node.get(field, &if_missing)) }
     end
 
     def nodes_with(field, values, options = {})
@@ -15,10 +15,10 @@ module Forester
 
       method = options[:single] ? :find : :select
       found_nodes = each_node.public_send(method) do |node|
-        not ( Array(node.get(field) { :no_match }) & Array(values) ).empty?
+        not ( as_array(node.get(field) { :no_match }) & as_array(values) ).empty?
       end
 
-      Array(found_nodes)
+      as_array(found_nodes)
     end
 
     def with_ancestry(options = {})
