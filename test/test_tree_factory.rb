@@ -10,11 +10,13 @@ class TestTreeFactory < Minitest::Test
   def test_from_root_hash
     hash = YAML.load_file(PATH_TO_SIMPLE_TREE)
 
-    whole_trees = [:last, 29, 4].map { |ml| new_with_max_level(hash, ml) }
+    whole_tree = from_root_hash(hash)
+
+    whole_trees = [whole_tree] + [29, 4].map { |ml| from_root_hash(hash, max_level: ml) }
 
     assert(whole_trees.product(whole_trees).all? { |t1, t2| t1.same_as?(t2) })
 
-    pruned_trees = (0..2).map { |ml| new_with_max_level(hash, ml) }
+    pruned_trees = (0..2).map { |ml| from_root_hash(hash, max_level: ml) }
 
     pruned_trees.each_with_index do |t, i|
       assert_equal(i, t.max_level)
@@ -24,10 +26,10 @@ class TestTreeFactory < Minitest::Test
     end
   end
 
-  protected
+  private
 
-  def new_with_max_level(hash, max_level)
-    Forester::TreeFactory.from_root_hash(hash['root'], max_level: max_level)
+  def from_root_hash(hash, options = {})
+    Forester::TreeFactory.from_root_hash(hash['root'], options)
   end
 
 end
