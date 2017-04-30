@@ -3,6 +3,19 @@ module Forester
 
     extend self
 
+    def node(content, options = {})
+      default_options = {
+        uid: SecureRandom.uuid
+      }
+      options = default_options.merge(options)
+
+      name = options[:uid]
+      new_node = TreeNode.new(name, content)
+
+      yield new_node if block_given?
+      new_node
+    end
+
     def from_yaml_file(file, options = {})
       from_hash_with_root_key(YAML.load_file(file), options)
     end

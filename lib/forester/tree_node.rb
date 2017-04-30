@@ -10,10 +10,44 @@ module Forester
     include Views
 
     alias_method :max_level, :node_height
-    alias_method :each_node, :breadth_each
 
     def nodes_of_level(l)
       l.between?(0, max_level) ? each_level.take(l + 1).last : []
+    end
+
+    def each_node(options = {})
+      default_options = {
+        traversal: :breadth_first
+      }
+      options = default_options.merge(options)
+
+      case options[:traversal]
+      when :breadth_first
+        breadth_each
+      when :depth_first
+        each
+      when :postorder
+        postordered_each
+      when :preorder
+        preordered_each
+      else
+        raise ArgumentError, "invalid traversal mode: #{options[:traversal]}"
+      end
+    end
+
+    def each_content(options = {})
+      node_enumerator = each_node(options)
+
+      Enumerator.new do |yielder|
+        stop = false
+        until stop
+          begin
+            yielder << node_enumerator.next.content
+          rescue StopIteration
+            stop = true
+          end
+        end
+      end
     end
 
     def each_level
@@ -61,7 +95,7 @@ module Forester
       true
     end
 
-    protected
+    private
 
     def as_array(object)
       [object].flatten(1)
