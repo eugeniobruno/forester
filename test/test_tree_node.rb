@@ -24,6 +24,8 @@ class TestTreeNode < Forester::Test
     assert_equal 'no', tree.get('whatever') { 'no' }
     assert_equal 'no', tree.get('whatever') { |n| 'no' }
     assert_equal 1,    tree.get('whatever') { |n| n.get('value') + 1 }
+
+    assert_raises(ArgumentError) { tree.get('whatever') }
   end
 
   def test_levels

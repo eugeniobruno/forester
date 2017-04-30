@@ -26,11 +26,13 @@ module Forester
 
     def from_hash_with_root_key(hash, options = {})
       default_options = {
-        max_level:    -2, # the last one
+        max_level:    :last,
         children_key: :children,
         root_key:     :root
       }
       options = default_options.merge(options)
+
+      options[:max_level] = -2 if options[:max_level] == :last
 
       dummy_root = TreeNode.new('<TEMP>')
       real_root  = fetch_indifferently(hash, options[:root_key])
@@ -47,24 +49,18 @@ module Forester
 
     def with_children(tree_node, children, children_key, levels_remaining)
       return tree_node if levels_remaining == 0
-      children.each do |child|
-        child_node     = node_from_hash(child, children_key)
-        child_children = fetch_indifferently(child, children_key, [])
+      children.each do |child_hash|
+        child_node     = node_from_hash(child_hash, children_key)
+        child_children = fetch_indifferently(child_hash, children_key, [])
 
         tree_node << with_children(child_node, child_children, children_key, levels_remaining - 1)
       end
       tree_node
     end
 
-    def node_from_hash(hash, children_key, options = {})
-      default_options = {
-        uid: SecureRandom.uuid
-      }
-      options = default_options.merge(options)
-
-      name    = options[:uid]
+    def node_from_hash(hash, children_key)
       content = NodeContent::Factory.from_hash(hash, children_key)
-      TreeNode.new(name, content)
+      node(content)
     end
 
   end

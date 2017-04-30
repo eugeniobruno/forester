@@ -4,7 +4,7 @@ module Forester
     def as_root_hash(options = {})
       default_options = {
         fields_to_include: :all,
-        max_level:         -1, # the last one
+        max_level:         :last,
         children_key:      :children,
         stringify_keys:    false,
         symbolize_keys:    false
@@ -17,6 +17,7 @@ module Forester
       children_key = children_key.to_s if options[:stringify_keys]
 
       max_level = options[:max_level]
+      max_level = -1 if max_level == :last
 
       next_children =
         if max_level == 0

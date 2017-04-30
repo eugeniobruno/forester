@@ -76,7 +76,7 @@ module Forester
         self.class.new(super)
       end
 
-      protected
+      private
 
       def equivs(key)
         [key, key.to_s, key.to_s.to_sym].uniq

@@ -7,7 +7,6 @@ class TestMutators < Forester::Test
   end
 
   def test_add_field
-
     tree.add_field!('number_four', 4)
 
     assert_equal 4, tree.get(:number_four)
@@ -23,11 +22,9 @@ class TestMutators < Forester::Test
     tree.add_field!(:number_six, -> (node) { node.get(:number_five) + number_one })
 
     assert_equal 6, tree.get(:number_six)
-
   end
 
   def test_delete_values
-
     node_1, node_2, node_3 = nodes_with_tags
 
     tree.delete_values!(:tags, [])
@@ -44,11 +41,9 @@ class TestMutators < Forester::Test
     assert_equal [], node_1.get(:tags)
     assert_equal [], node_2.get(:tags)
     assert_equal [], node_3.get(:tags)
-
   end
 
   def test_percolate_values
-
     node_1, node_2, node_3 = nodes_with_tags
 
     tree.percolate_values!(:tags, ['First tag', 'Second tag', 'Third tag'])
@@ -65,7 +60,6 @@ class TestMutators < Forester::Test
     assert_equal [], node_1.get(:tags)
     assert_equal [], node_2.get(:tags)
     assert_equal [], node_3.get(:tags)
-
   end
 
   private
@@ -76,13 +70,11 @@ class TestMutators < Forester::Test
 
   def nodes_with_tags
     [1, 6, 9].map do |n|
-
       tree.search({
         single_node: true,
         by_field: :value,
         keywords: n
       }).first
-
     end
   end
 

@@ -3,11 +3,24 @@ require 'minitest_helper'
 class TestAggregators < Forester::Test
 
   def test_group_by_sibling_subtrees
-
     expected = {
-      "First node of level 2"  => ["Already in level 2", "I want to be the very best", "like no one ever was"],
-      "Second node of level 2" => ["I have a sibling to my left", "She wants to catch them all"],
-      "Third node of level 2"  => ["Reached level 3", "It's dark", "A hidden secret lies in the deepest leaves...", "Just kidding.", "Could forester handle trees with hundreds of levels?", "Maybe."]
+      "First node of level 2"  => [
+                                    "Already in level 2",
+                                    "I want to be the very best",
+                                    "like no one ever was"
+                                  ],
+      "Second node of level 2" => [
+                                    "I have a sibling to my left",
+                                    "She wants to catch them all"
+                                  ],
+      "Third node of level 2"  => [
+                                    "Reached level 3",
+                                    "It's dark",
+                                    "A hidden secret lies in the deepest leaves...",
+                                    "Just kidding.",
+                                    "Could forester handle trees with hundreds of levels?",
+                                    "Maybe."
+                                  ]
     }
 
     actual = tree.group_by_sibling_subtrees(
@@ -19,7 +32,6 @@ class TestAggregators < Forester::Test
   end
 
   def test_group_by_sibling_subtrees_with_ancestry
-
     expected = {
       ["First node of level 1", "First node of level 2"]  => ["Already in level 2", "I want to be the very best", "like no one ever was"],
       ["First node of level 1", "Second node of level 2"] => ["I have a sibling to my left", "She wants to catch them all"],
@@ -36,7 +48,12 @@ class TestAggregators < Forester::Test
   end
 
   def test_nodes_with
-    expected_names = ["A hidden secret lies in the deepest leaves...", "Just kidding.", "Could forester handle trees with hundreds of levels?", "Maybe."]
+    expected_names = [
+      "A hidden secret lies in the deepest leaves...",
+      "Just kidding.",
+      "Could forester handle trees with hundreds of levels?",
+      "Maybe."
+    ]
 
     found_nodes = tree.nodes_with('name', 'Second node of level 3')
     assert_equal 1, found_nodes.length
@@ -49,7 +66,6 @@ class TestAggregators < Forester::Test
   end
 
   def test_search
-
     expected = [7]
 
     actual_1 = tree.search({

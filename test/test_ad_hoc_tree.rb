@@ -36,40 +36,16 @@ class TestAdHocTree < Forester::Test
   def binary_tree
     @binary_tree ||= begin
       Forester::TreeFactory.node(:top) do |parent|
-        parent.add_child_content(:left) do |left|
-          left.add_child_content(:left_left) do |left_left|
-            left_left.add_child_content(:left_left_left)
+        parent.add_child_content!(:left) do |left|
+          left.add_child_content!(:left_left) do |left_left|
+            left_left.add_child_content!(:left_left_left)
           end
-          left.add_child_content(:left_right)
+          left.add_child_content!(:left_right)
         end
-        parent.add_child_content(:right) do |right|
-          right.add_child_content(:right_left)
-          right.add_child_content(:right_right)
+        parent.add_child_content!(:right) do |right|
+          right.add_child_content!(:right_left)
+          right.add_child_content!(:right_right)
         end
-      end
-    end
-  end
-
-  def locations_tree
-    Forester::TreeFactory.node('Earth') do |earth|
-      earth.add_child_content('America') do |america|
-        america.add_child_content('Canada') do |canada|
-          canada.add_child_content('Manitoba')
-          canada.add_child_content('Ontario')
-        end
-        america.add_child_content('Ecuador')
-        america.add_child_content('Chile')
-        america.add_child_content('Argentina') do |argentina|
-          argentina.add_child_content('San Luis')
-          argentina.add_child_content('Buenos Aires')
-        end
-      end
-      earth.add_child_content('Europe') do |europe|
-        europe.add_child_content('Spain')
-        europe.add_child_content('Germany')
-      end
-      earth.add_child_content('Asia') do |asia|
-        asia.add_child_content('Japan')
       end
     end
   end

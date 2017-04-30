@@ -1,13 +1,13 @@
 module Forester
   module Mutators
 
-    def add_child_content(content, options = {}, &block)
+    def add_child_content!(content, options = {}, &block)
       new_node = TreeFactory.node(content, options, &block)
       add(new_node)
     end
 
     def add_field!(name, definition, options = {})
-      add_fields!([{ name: name, definition: definition }], options)
+      add_fields!([name: name, definition: definition], options)
     end
 
     def add_fields!(fields, options = {})

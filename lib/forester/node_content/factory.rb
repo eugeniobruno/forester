@@ -1,25 +1,23 @@
 module Forester
   module NodeContent
-    class Factory
+    module Factory
 
-      class << self
+      extend self
 
-        def from_hash(hash, children_key, indifferent = true)
-          ret = without_key(hash, children_key)
-          ret = Dictionary.new(ret) if indifferent
-          ret
-        end
+      def from_hash(hash, children_key, indifferent = true)
+        ret = without_key(hash, children_key)
+        ret = Dictionary.new(ret) if indifferent
+        ret
+      end
 
-        def from_array(array)
-          List.new(array)
-        end
+      def from_array(array)
+        List.new(array)
+      end
 
-        private
+      private
 
-        def without_key(hash, key)
-          hash.reject { |k, _| k.to_s == key.to_s }
-        end
-
+      def without_key(hash, key)
+        hash.reject { |k, _| k.to_s == key.to_s }
       end
 
     end

@@ -76,12 +76,12 @@ module Forester
       elsif options[:default] != :raise
         options[:default]
       else
-        raise ArgumentError.new("the node \"#{name}\" does not have \"#{field}\"")
+        raise ArgumentError, "the node \"#{best_name}\" does not have \"#{field}\""
       end
     end
 
-    def contents
-      each_node.map(&:content)
+    def contents(options = {})
+      each_node(options).map(&:content)
     end
 
     def same_as?(other)
@@ -96,6 +96,10 @@ module Forester
     end
 
     private
+
+    def best_name
+      get(:name, default: name)
+    end
 
     def as_array(object)
       [object].flatten(1)
