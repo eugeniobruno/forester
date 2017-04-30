@@ -1,11 +1,6 @@
-require 'minitest/autorun'
-require 'forester'
+require 'minitest_helper'
 
-require_relative './simple_tree_helper'
-
-class TestTreeFactory < Minitest::Test
-
-  include SimpleTreeHelper
+class TestTreeFactory < Forester::Test
 
   def test_from_root_hash
     hash = YAML.load_file(PATH_TO_SIMPLE_TREE)

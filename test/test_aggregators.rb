@@ -1,11 +1,6 @@
-require 'minitest/autorun'
-require 'forester'
+require 'minitest_helper'
 
-require_relative './simple_tree_helper'
-
-class TestAggregators < Minitest::Test
-
-  include SimpleTreeHelper
+class TestAggregators < Forester::Test
 
   def test_group_by_sibling_subtrees
 
@@ -15,7 +10,7 @@ class TestAggregators < Minitest::Test
       "Third node of level 2"  => ["Reached level 3", "It's dark", "A hidden secret lies in the deepest leaves...", "Just kidding.", "Could forester handle trees with hundreds of levels?", "Maybe."]
     }
 
-    actual = @@tree.group_by_sibling_subtrees(
+    actual = tree.group_by_sibling_subtrees(
       level: 2,
       aggregation_field: 'strings'
     )
@@ -31,7 +26,7 @@ class TestAggregators < Minitest::Test
       ["Second node of level 1", "Third node of level 2"] => ["Reached level 3", "It's dark", "A hidden secret lies in the deepest leaves...", "Just kidding.", "Could forester handle trees with hundreds of levels?", "Maybe."]
     }
 
-    actual = @@tree.group_by_sibling_subtrees(
+    actual = tree.group_by_sibling_subtrees(
       level: 2,
       aggregation_field: 'strings',
       ancestry_in_keys: true
@@ -43,7 +38,7 @@ class TestAggregators < Minitest::Test
   def test_nodes_with
     expected_names = ["A hidden secret lies in the deepest leaves...", "Just kidding.", "Could forester handle trees with hundreds of levels?", "Maybe."]
 
-    found_nodes = @@tree.nodes_with('name', 'Second node of level 3')
+    found_nodes = tree.nodes_with('name', 'Second node of level 3')
     assert_equal 1, found_nodes.length
 
     actual_names = found_nodes.flat_map do |node|
@@ -57,21 +52,21 @@ class TestAggregators < Minitest::Test
 
     expected = [7]
 
-    actual_1 = @@tree.search({
+    actual_1 = tree.search({
       by_field: 'name',
       keywords: 'Second node of level 3',
       then_get: 'value',
       subtree:  false
     })
 
-    actual_2 = @@tree.search({
+    actual_2 = tree.search({
       by_field: 'name',
       keywords: ['Second node of level 3', 'Not present name'],
       then_get: 'value',
       subtree:  false
     })
 
-    actual_3 = @@tree.search({
+    actual_3 = tree.search({
       by_field: 'strings',
       keywords: 'A hidden secret lies in the deepest leaves...',
       then_get: 'value',
@@ -82,7 +77,7 @@ class TestAggregators < Minitest::Test
     assert_equal expected, actual_3
 
     expected_values = [7, 8, 9]
-    actual_values = @@tree.search({
+    actual_values = tree.search({
       by_field: 'name',
       keywords: 'Second node of level 3',
       then_get: 'value',

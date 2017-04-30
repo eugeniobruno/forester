@@ -1,11 +1,6 @@
-require 'minitest/autorun'
-require 'forester'
+require 'minitest_helper'
 
-require_relative './simple_tree_helper'
-
-class TestValidators < Minitest::Test
-
-  include SimpleTreeHelper
+class TestValidators < Forester::Test
 
   def test_validate_uniqueness_of_field_uniques
     expected = {
@@ -15,7 +10,7 @@ class TestValidators < Minitest::Test
     }
 
     ['name', :name, 'special', 'ghost'].each do |field|
-      actual = @@tree.validate_uniqueness_of_field(field)
+      actual = tree.validate_uniqueness_of_field(field)
       assert_equal expected, actual
     end
 
@@ -35,7 +30,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color)
+    actual = tree.validate_uniqueness_of_field(:color)
     assert_equal expected, actual
   end
 
@@ -52,7 +47,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color, {
+    actual = tree.validate_uniqueness_of_field(:color, {
       first_failure_only: true
     })
     assert_equal expected, actual
@@ -71,7 +66,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color, {
+    actual = tree.validate_uniqueness_of_field(:color, {
       among_siblings_of_level: 1
     })
 
@@ -85,7 +80,7 @@ class TestValidators < Minitest::Test
       failures: {}
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color, {
+    actual = tree.validate_uniqueness_of_field(:color, {
       among_siblings_of_level: 2
     })
 
@@ -105,7 +100,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color, {
+    actual = tree.validate_uniqueness_of_field(:color, {
       within_subtrees_of_level: 1,
     })
 
@@ -125,7 +120,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color, {
+    actual = tree.validate_uniqueness_of_field(:color, {
       within_subtrees_of_level: 3,
     })
 
@@ -139,7 +134,7 @@ class TestValidators < Minitest::Test
       failures: {}
     }
 
-    actual = @@tree.validate_uniqueness_of_field(:color, {
+    actual = tree.validate_uniqueness_of_field(:color, {
       within_subtrees_of_level: 4,
     })
 
@@ -160,7 +155,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_fields(['name', 'color'])
+    actual = tree.validate_uniqueness_of_fields(['name', 'color'])
 
     assert_equal expected, actual
   end
@@ -172,7 +167,7 @@ class TestValidators < Minitest::Test
       failures: {}
     }
 
-    actual = @@tree.validate_uniqueness_of_fields(['name', 'color'], {
+    actual = tree.validate_uniqueness_of_fields(['name', 'color'], {
       combination: true
     })
 
@@ -192,7 +187,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_fields(['color', 'tone'], {
+    actual = tree.validate_uniqueness_of_fields(['color', 'tone'], {
       first_failure_only: true
     })
 
@@ -217,7 +212,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_fields(['color', 'tone'])
+    actual = tree.validate_uniqueness_of_fields(['color', 'tone'])
 
     assert_equal expected, actual
   end
@@ -235,7 +230,7 @@ class TestValidators < Minitest::Test
       }
     }
 
-    actual = @@tree.validate_uniqueness_of_fields(['color', 'tone'], {
+    actual = tree.validate_uniqueness_of_fields(['color', 'tone'], {
       combination: true
     })
 

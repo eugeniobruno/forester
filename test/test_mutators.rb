@@ -1,33 +1,28 @@
-require 'minitest/autorun'
-require 'forester'
+require 'minitest_helper'
 
-require_relative './simple_tree_helper'
-
-class TestMutators < Minitest::Test
+class TestMutators < Forester::Test
 
   def setup
-    path_to_trees       = "#{File.dirname(__FILE__)}/trees"
-    path_to_simple_tree = "#{path_to_trees}/simple_tree.yml"
-    @tree = Forester::TreeFactory.from_yaml_file(path_to_simple_tree)
+    @mutable_tree = Forester::TreeFactory.from_yaml_file(PATH_TO_SIMPLE_TREE)
   end
 
   def test_add_field
 
-    @tree.add_field!('number_four', 4)
+    tree.add_field!('number_four', 4)
 
-    assert_equal 4, @tree.get(:number_four)
-    assert_equal 4, @tree.get('number_four')
+    assert_equal 4, tree.get(:number_four)
+    assert_equal 4, tree.get('number_four')
 
-    @tree.add_field!(:number_five, 5)
+    tree.add_field!(:number_five, 5)
 
-    assert_equal 5, @tree.get(:number_five)
-    assert_equal 5, @tree.get('number_five')
+    assert_equal 5, tree.get(:number_five)
+    assert_equal 5, tree.get('number_five')
 
     number_one = 1
 
-    @tree.add_field!(:number_six, -> (node) { node.get(:number_five) + number_one })
+    tree.add_field!(:number_six, -> (node) { node.get(:number_five) + number_one })
 
-    assert_equal 6, @tree.get(:number_six)
+    assert_equal 6, tree.get(:number_six)
 
   end
 
@@ -35,17 +30,17 @@ class TestMutators < Minitest::Test
 
     node_1, node_2, node_3 = nodes_with_tags
 
-    @tree.delete_values!(:tags, [])
+    tree.delete_values!(:tags, [])
     assert_equal ['First tag', 'Second tag', 'Third tag'], node_1.get(:tags)
     assert_equal ['Second tag', 'Third tag'],              node_2.get(:tags)
     assert_equal ['Third tag'],                            node_3.get(:tags)
 
-    @tree.delete_values!(:tags, ['First tag'])
+    tree.delete_values!(:tags, ['First tag'])
     assert_equal ['Second tag', 'Third tag'], node_1.get(:tags)
     assert_equal ['Second tag', 'Third tag'], node_2.get(:tags)
     assert_equal ['Third tag'],               node_3.get(:tags)
 
-    @tree.delete_values!(:tags, ['First tag', 'Second tag', 'Third tag'])
+    tree.delete_values!(:tags, ['First tag', 'Second tag', 'Third tag'])
     assert_equal [], node_1.get(:tags)
     assert_equal [], node_2.get(:tags)
     assert_equal [], node_3.get(:tags)
@@ -56,29 +51,33 @@ class TestMutators < Minitest::Test
 
     node_1, node_2, node_3 = nodes_with_tags
 
-    @tree.percolate_values!(:tags, ['First tag', 'Second tag', 'Third tag'])
+    tree.percolate_values!(:tags, ['First tag', 'Second tag', 'Third tag'])
     assert_equal ['First tag', 'Second tag', 'Third tag'], node_1.get(:tags)
     assert_equal ['Second tag', 'Third tag'],              node_2.get(:tags)
     assert_equal ['Third tag'],                            node_3.get(:tags)
 
-    @tree.percolate_values!(:tags, ['First tag'])
+    tree.percolate_values!(:tags, ['First tag'])
     assert_equal ['First tag'], node_1.get(:tags)
     assert_equal [],            node_2.get(:tags)
     assert_equal [],            node_3.get(:tags)
 
-    @tree.percolate_values!(:tags, [])
+    tree.percolate_values!(:tags, [])
     assert_equal [], node_1.get(:tags)
     assert_equal [], node_2.get(:tags)
     assert_equal [], node_3.get(:tags)
 
   end
 
-  protected
+  private
+
+  def tree
+    @mutable_tree
+  end
 
   def nodes_with_tags
     [1, 6, 9].map do |n|
 
-      @tree.search({
+      tree.search({
         single_node: true,
         by_field: :value,
         keywords: n

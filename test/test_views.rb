@@ -1,18 +1,13 @@
-require 'minitest/autorun'
-require 'forester'
+require 'minitest_helper'
 
-require_relative './simple_tree_helper'
-
-class TestViews < Minitest::Test
-
-  include SimpleTreeHelper
+class TestViews < Forester::Test
 
   def test_as_root_hash
-    hash = (YAML.load(File.read(PATH_TO_SIMPLE_TREE)))
+    hash = YAML.load_file(PATH_TO_SIMPLE_TREE)
     add_empty_children_keys(hash['root'])
 
     expected = hash['root']
-    actual   = @@tree.as_root_hash(stringify_keys: true)
+    actual   = tree.as_root_hash(stringify_keys: true)
 
     assert_equal expected, actual
   end
