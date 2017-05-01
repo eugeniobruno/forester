@@ -1,8 +1,19 @@
 module Forester
   module Mutators
 
+    def change_parent_to!(new_parent_node, options = {})
+      default_options = {
+        subtree: true
+      }
+      options = default_options.merge(options)
+
+      children.each { |child| parent.add(child) } unless options[:subtree]
+
+      new_parent_node.add(self) # always as its last child
+    end
+
     def add_child_content!(content, options = {}, &block)
-      new_node = TreeFactory.node(content, options, &block)
+      new_node = TreeFactory.node_from_hash(content, options, &block)
       add(new_node)
     end
 

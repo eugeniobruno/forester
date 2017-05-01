@@ -63,11 +63,12 @@ module Forester
     def get(field, options = {}, &if_missing)
       default_options = {
         default: :raise,
-        subtree: false
+        subtree: false, # if false, traversal is ignored
+        traversal: :depth_first
       }
       options = default_options.merge(options)
 
-      return own_and_descendants(field, &if_missing) if options[:subtree]
+      return own_and_descendants(field, { traversal: options[:traversal] }, &if_missing) if options[:subtree]
 
       if has?(field)
         content.get(field)

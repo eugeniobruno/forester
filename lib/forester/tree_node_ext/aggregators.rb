@@ -1,10 +1,17 @@
 module Forester
   module Aggregators
 
-    def own_and_descendants(field, &if_missing)
+    def own_and_descendants(field, options = {}, &if_missing)
+      default_options = {
+        traversal: :depth_first
+      }
+      options = default_options.merge(options)
+
       if_missing = -> (node) { [] } unless block_given?
 
-      flat_map { |node| as_array(node.get(field, &if_missing)) }
+      each_node(traversal: options[:traversal]).flat_map do |node|
+        as_array(node.get(field, &if_missing))
+      end
     end
 
     def nodes_with(field, values, options = {})
@@ -49,6 +56,9 @@ module Forester
       found_nodes = nodes_with(options[:by_field], options[:keywords], single: options[:single_node] )
 
       return found_nodes if options[:then_get] == :nodes
+      # TODO this method should never return [nil]. This happens when single_node
+      # is true and no matches are found. Moreover, if then_get is not :nodes,
+      # it should not raise. Both cases should return [].
 
       found_nodes.flat_map do |node|
         node.get(options[:then_get], subtree: options[:subtree])

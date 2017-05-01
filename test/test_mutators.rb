@@ -2,10 +2,6 @@ require 'minitest_helper'
 
 class TestMutators < Forester::Test
 
-  def setup
-    @mutable_tree = Forester::TreeFactory.from_yaml_file(PATH_TO_SIMPLE_TREE)
-  end
-
   def test_add_field
     tree.add_field!('number_four', 4)
 
@@ -62,10 +58,30 @@ class TestMutators < Forester::Test
     assert_equal [], node_3.get(:tags)
   end
 
+  def test_change_parent_to
+    node_to_move = binary_tree.search(single_node: true, by_field: :name, keywords: [:left_left]).first
+    old_parent   = binary_tree.search(single_node: true, by_field: :name, keywords: [:left]).first
+    new_parent   = binary_tree.search(single_node: true, by_field: :name, keywords: [:right]).first
+
+    node_to_move.change_parent_to!(new_parent)
+
+    expected = %i(top left left_right right right_left right_right left_left left_left_left)
+    assert_equal expected, binary_tree.get(:name, subtree: true, traversal: :depth_first)
+
+    node_to_move.change_parent_to!(old_parent, subtree: false)
+
+    expected = %i(top left left_right left_left right right_left right_right left_left_left)
+    assert_equal expected, binary_tree.get(:name, subtree: true, traversal: :depth_first)
+  end
+
   private
 
   def tree
-    @mutable_tree
+    @mutable_tree ||= super.detached_subtree_copy
+  end
+
+  def binary_tree
+    @mutable_binary_tree ||= super.detached_subtree_copy
   end
 
   def nodes_with_tags
