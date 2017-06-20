@@ -1,6 +1,8 @@
 # Forester
 
 [![Gem Version](https://badge.fury.io/rb/forester.svg)](https://badge.fury.io/rb/forester)
+[![Code Climate](https://codeclimate.com/github/eugeniobruno/forester.svg)](https://codeclimate.com/github/eugeniobruno/forester)
+[![Dependency Status](https://gemnasium.com/eugeniobruno/forester.svg)](https://gemnasium.com/eugeniobruno/forester)
 
 Based on *rubytree*, this gem lets you build trees and run queries against them.
 
