@@ -1,12 +1,7 @@
-require 'simplecov'
-SimpleCov.start do
-  add_filter 'test/'
-end
-
+require 'coverage_helper'
 require 'minitest/autorun'
-
+require 'minitest/bender'
 require 'pry-byebug'
-
 require 'forester'
 
 class Forester::Test < Minitest::Test

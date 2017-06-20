@@ -1,6 +1,8 @@
 # Forester
 
 [![Gem Version](https://badge.fury.io/rb/forester.svg)](https://badge.fury.io/rb/forester)
+[![Build Status](https://travis-ci.org/eugeniobruno/forester.svg?branch=master)](https://travis-ci.org/eugeniobruno/forester)
+[![Coverage Status](https://coveralls.io/repos/github/eugeniobruno/forester/badge.svg?branch=master)](https://coveralls.io/github/eugeniobruno/forester?branch=master)
 [![Code Climate](https://codeclimate.com/github/eugeniobruno/forester.svg)](https://codeclimate.com/github/eugeniobruno/forester)
 [![Dependency Status](https://gemnasium.com/eugeniobruno/forester.svg)](https://gemnasium.com/eugeniobruno/forester)
 
