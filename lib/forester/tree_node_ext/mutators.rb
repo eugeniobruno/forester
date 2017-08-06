@@ -1,7 +1,6 @@
 module Forester
   module Mutators
-
-    def change_parent_to!(new_parent_node, options = {})
+    def change_parent_to(new_parent_node, options = {})
       default_options = {
         subtree: true
       }
@@ -12,70 +11,64 @@ module Forester
       new_parent_node.add(self) # always as its last child
     end
 
-    def add_child_content!(content, options = {}, &block)
-      new_node = TreeFactory.node_from_hash(content, options, &block)
+    def add_child_content(content)
+      new_node = Forester.tree_factory.node_from_content(content)
       add(new_node)
     end
 
-    def add_field!(name, definition, options = {})
-      add_fields!([name: name, definition: definition], options)
+    def add_field_in_node(name, definition)
+      value = definition.respond_to?(:call) ? definition.call(self) : definition
+
+      content[name] = value
     end
 
-    def add_fields!(fields, options = {})
-      default_options = {
-        subtree: true
-      }
-      options = default_options.merge(options)
-
-      target_nodes = options[:subtree] ? each_node : [self]
-
-      target_nodes.each { |node| node.add_fields_to_root!(fields) }
-    end
-
-    def add_fields_to_root!(fields)
+    def add_fields_in_node(fields)
       fields.each do |field|
-        value = field[:definition]
-        value = value.call(self) if value.respond_to?(:call)
-
-        put!(field[:name], value)
+        add_field_in_node(field[:name], field[:definition])
       end
     end
 
-    def delete_values!(field, values, options = {})
+    def add_field_in_subtree(name, definition)
+      add_fields_in_subtree([name: name, definition: definition])
+    end
+
+    def add_fields_in_subtree(fields)
+      each_node { |node| node.add_fields_in_node(fields) }
+    end
+
+    def delete_values_in_node(field, values, options = {})
       default_options = {
-        percolate: false,
-        subtree:   true
+        percolate: false
       }
       options = default_options.merge(options)
 
-      target_nodes = options[:subtree] ? each_node : [self]
-
-      target_nodes.each { |node| node.delete_values_from_root!(field, values, options[:percolate]) }
-    end
-
-    def delete_values_from_root!(field, values, percolate)
-      return unless has?(field)
+      return unless has_field?(field)
       current_value = get(field)
-      return unless current_value.is_a?(Array)
 
-      new_value =
-        if percolate
-          current_value & as_array(values)
-        else
-          current_value - as_array(values)
-        end
+      operation = options[:percolate] ? :& : :-
+      return unless current_value.respond_to?(operation)
 
-      put!(field, new_value)
+      new_value = current_value.public_send(operation, as_array(values))
+
+      content[field] = new_value
     end
 
-    def percolate_values!(field, values, options = {})
-      delete_values!(field, values, options.merge(percolate: true))
+    def delete_values_in_subtree(field, values, options = {})
+      default_options = {
+        percolate: false
+      }
+      options = default_options.merge(options)
+
+      each_node { |node| node.delete_values_in_node(field, values, options) }
     end
 
-    def remove_levels_past!(last_level_to_keep)
+    def remove_levels_past(last_level_to_keep)
+      unless last_level_to_keep >= 1
+        raise ArgumentError, "expected a positive integer, got #{last_level_to_keep}"
+      end
+
       nodes_of_level(last_level_to_keep).map(&:remove_all!)
       self
     end
-
   end
 end

@@ -1,32 +1,21 @@
 module Forester
   module Validators
-
     def validate_uniqueness_of_field(field, options = {})
       validate_uniqueness_of_fields([field], options)
     end
 
     def validate_uniqueness_of_fields(fields, options = {})
-      default_options = {
-        combination:              false,
-        first_failure_only:       false,
-        within_subtrees_of_level: 0,
-        among_siblings_of_level:  :not_siblings,
-        field_for_failures:       :name,
-        as_failure: ->(node) { node.get(options[:field_for_failures]) }
-      }
-      options = default_options.merge(options)
-
-      return of_combination_of_fields(fields, options) if options[:combination]
+      options = default_validator_options.merge(options)
 
       failures = Hash.new(Hash.new([]))
 
-      nodes_of_level(options[:within_subtrees_of_level]).each do |subtree|
+      nodes_of_depth(options[:within_subtrees_of_depth]).each do |subtree|
         visited_nodes = []
         nodes_to_visit =
-          if options[:among_siblings_of_level] == :not_siblings
+          if options[:among_siblings_of_depth] == :not_siblings
             subtree.each_node
           else
-            nodes_of_level(options[:among_siblings_of_level])
+            nodes_of_depth(options[:among_siblings_of_depth])
           end
 
         nodes_to_visit.each  do |node|
@@ -53,18 +42,18 @@ module Forester
       result(failures)
     end
 
-    private
+    def validate_uniqueness_of_fields_combination(fields, options = {})
+      options = default_validator_options.merge(options)
 
-    def of_combination_of_fields(fields, options)
       failures = Hash.new(Hash.new([]))
 
-      nodes_of_level(options[:within_subtrees_of_level]).each do |subtree|
+      nodes_of_depth(options[:within_subtrees_of_depth]).each do |subtree|
         visited_nodes = []
         nodes_to_visit =
-          if options[:among_siblings_of_level] == :not_siblings
+          if options[:among_siblings_of_depth] == :not_siblings
             subtree.each_node
           else
-            nodes_of_level(options[:among_siblings_of_level])
+            nodes_of_depth(options[:among_siblings_of_depth])
           end
 
         nodes_to_visit.each  do |node|
@@ -91,12 +80,21 @@ module Forester
 
     private
 
+    def default_validator_options
+      {
+        first_failure_only: false,
+        within_subtrees_of_depth: 0,
+        among_siblings_of_depth: :not_siblings,
+        as_failure: ->(node) { node }
+      }
+    end
+
     def all_have?(field, nodes)
       all_have_all?([field], nodes)
     end
 
     def all_have_all?(fields, nodes)
-      nodes.all? { |n| fields.all? { |f| n.has?(f) } }
+      nodes.all? { |n| fields.all? { |f| n.has_field?(f) } }
     end
 
     def same_values?(field, nodes)
@@ -110,8 +108,8 @@ module Forester
     end
 
     def prepare_hash(hash, key, subkey)
-      hash[key]         = {} unless hash.has_key?(key)
-      hash[key][subkey] = [] unless hash[key].has_key?(subkey)
+      hash[key]         = {} unless hash.key?(key)
+      hash[key][subkey] = [] unless hash[key].key?(subkey)
     end
 
     def add_failure_if_new(failures, key, subkey, value)
@@ -129,6 +127,5 @@ module Forester
         failures: failures
       }
     end
-
   end
 end

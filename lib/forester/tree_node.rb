@@ -1,110 +1,98 @@
 module Forester
   class TreeNode < Tree::TreeNode
-
-    extend Forwardable
-    def_delegators :@content, :fields, :has?, :put!, :add!, :del!
-
-    include Aggregators
-    include Validators
+    include Iterators
     include Mutators
-    include Views
+    include Validators
+    include Serializers
 
-    alias_method :max_level, :node_height
+    def node_level
+      node_depth + 1
+    end
+
+    def nodes_of_depth(d) # relative to this node
+      d.between?(0, node_height) ? each_level.take(d + 1).last : []
+    end
 
     def nodes_of_level(l)
-      l.between?(0, max_level) ? each_level.take(l + 1).last : []
+      nodes_of_depth(l - 1)
     end
 
-    def each_node(options = {})
-      default_options = {
-        traversal: :breadth_first
-      }
-      options = default_options.merge(options)
+    def path_from_root
+      (parentage || []).reverse + [self]
+    end
 
-      case options[:traversal]
-      when :breadth_first
-        breadth_each
-      when :depth_first
-        each
-      when :postorder
-        postordered_each
-      when :preorder
-        preordered_each
-      else
-        raise ArgumentError, "invalid traversal mode: #{options[:traversal]}"
+    def paths_to_leaves
+      paths_to(leaves)
+    end
+
+    def paths_to(descendants)
+      descendants.map { |node| node.path_from_root.drop(node_depth) }
+    end
+
+    def leaf?
+      is_leaf?
+    end
+
+    def leaves
+      each_leaf
+    end
+
+    def paths_of_length(l)
+      paths_to(nodes_of_depth(l))
+    end
+
+    def leaves_when_pruned_to_depth(d)
+      ret = []
+      each_node(traversal: :breadth_first) do |node|
+        relative_depth_of_descendant = node.node_depth - node_depth
+        break if relative_depth_of_descendant > d
+        ret.push(node) if node.leaf? || (relative_depth_of_descendant == d)
       end
+
+      ret
     end
 
-    def each_content(options = {})
-      node_enumerator = each_node(options)
-
-      Enumerator.new do |yielder|
-        stop = false
-        until stop
-          begin
-            yielder << node_enumerator.next.content
-          rescue StopIteration
-            stop = true
-          end
-        end
-      end
+    def leaves_when_pruned_to_level(l)
+      leaves_when_pruned_to_depth(l - 1)
     end
 
-    def each_level
-      Enumerator.new do |yielder|
-        level = [self]
-        until level.empty?
-          yielder << level
-          level = level.flat_map(&:children)
-        end
-      end
+    def paths_to_leaves_when_pruned_to_depth(d)
+      paths_to(leaves_when_pruned_to_depth(d))
     end
 
-    def get(field, options = {}, &if_missing)
-      default_options = {
-        default: :raise,
-        subtree: false, # if false, traversal is ignored
-        traversal: :depth_first
-      }
-      options = default_options.merge(options)
+    def paths_to_leaves_when_pruned_to_level(l)
+      paths_to(leaves_when_pruned_to_level(l))
+    end
 
-      return own_and_descendants(field, { traversal: options[:traversal] }, &if_missing) if options[:subtree]
-
-      if has?(field)
-        content.get(field)
+    def get(field, default = :raise)
+      if has_field?(field)
+        content[field]
       elsif block_given?
-        yield self
-      elsif options[:default] != :raise
-        options[:default]
+        yield(field, self)
+      elsif default != :raise
+        default
       else
-        raise ArgumentError, "the node \"#{best_name}\" does not have \"#{field}\""
+        missing_key =
+          if field.is_a?(Symbol)
+            ":#{field}"
+          elsif field.is_a?(String)
+            "'#{field}'"
+          else
+            field
+          end
+        error_message = "key not found: #{missing_key} in node content \"#{content}\""
+        raise KeyError, error_message
       end
     end
 
-    def contents(options = {})
-      each_node(options).map(&:content)
-    end
-
-    def same_as?(other)
-      return false unless content == other.content
-      return false unless    size == other.size
-      nodes_of_other = other.each_node.to_a
-      each_node.with_index do |n, i|
-        next if i == 0
-        return false unless n.same_as?(nodes_of_other[i])
-      end
-      true
+    def has_field?(field)
+      content.key?(field)
     end
 
     private
 
-    def best_name
-      get(:name, default: name)
-    end
-
     def as_array(object)
       [object].flatten(1)
     end
-
   end
 end

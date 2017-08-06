@@ -1,0 +1,14 @@
+---
+root:
+  name: top
+  children:
+  - name: left
+    children:
+    - name: left_left
+      children:
+      - name: left_left_left
+    - name: left_right
+  - name: right
+    children:
+    - name: right_left
+    - name: right_right

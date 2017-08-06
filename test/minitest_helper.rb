@@ -4,33 +4,32 @@ require 'minitest/bender'
 require 'pry-byebug'
 require 'forester'
 
-class Forester::Test < Minitest::Test
+module Forester
+  class Test < Minitest::Test
+    private
 
-  private
-
-  PATH_TO_TREES       = "#{File.dirname(__FILE__)}/trees"
-  PATH_TO_SIMPLE_TREE = "#{PATH_TO_TREES}/simple_tree.yml"
-  TREE = Forester::TreeFactory.from_yaml_file(PATH_TO_SIMPLE_TREE)
-
-  BINARY_TREE = Forester::TreeFactory.node_from_hash(name: :top) do |parent|
-    parent.add_child_content!(name: :left) do |left|
-      left.add_child_content!(name: :left_left) do |left_left|
-        left_left.add_child_content!(name: :left_left_left)
+    def simple_tree_hash
+      @simple_tree ||= begin
+        load_tree('simple')
       end
-      left.add_child_content!(name: :left_right)
     end
-    parent.add_child_content!(name: :right) do |right|
-      right.add_child_content!(name: :right_left)
-      right.add_child_content!(name: :right_right)
+
+    def simple_tree
+      Forester.tree_factory.from_root_hash(simple_tree_hash, children_key: 'children')
+    end
+
+    def binary_tree_hash
+      @binary_tree ||= load_tree('binary')
+    end
+
+    def binary_tree
+      Forester.tree_factory.from_root_hash(binary_tree_hash, children_key: 'children')
+    end
+
+    def load_tree(name)
+      path_to_trees = "#{File.dirname(__FILE__)}/trees"
+      path_to_tree  = "#{path_to_trees}/#{name}_tree.yml"
+      YAML.load_file(path_to_tree).fetch('root')
     end
   end
-
-  def tree
-    TREE
-  end
-
-  def binary_tree
-    BINARY_TREE
-  end
-
 end

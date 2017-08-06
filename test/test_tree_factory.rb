@@ -1,30 +1,25 @@
 require 'minitest_helper'
 
 class TestTreeFactory < Forester::Test
-
   def test_from_root_hash
-    hash = YAML.load_file(PATH_TO_SIMPLE_TREE)
+    whole_tree = from_root_hash(simple_tree_hash)
 
-    whole_tree = from_root_hash(hash)
+    assert_equal 10, whole_tree.size
+  end
 
-    whole_trees = [whole_tree] + [29, 4].map { |ml| from_root_hash(hash, max_level: ml) }
+  def test_from_root_hash_with_max_depth
+    pruned_tree = from_root_hash(simple_tree_hash, max_depth: 2)
 
-    assert(whole_trees.product(whole_trees).all? { |t1, t2| t1.same_as?(t2) })
+    assert_equal 6, pruned_tree.size
+  end
 
-    pruned_trees = (0..2).map { |ml| from_root_hash(hash, max_level: ml) }
-
-    pruned_trees.each_with_index do |t, i|
-      assert_equal(i, t.max_level)
-
-      pruned = whole_trees[i].remove_levels_past!(i)
-      assert(t.same_as?(pruned))
-    end
+  def test_node_from_content
+    assert_equal({ number: 1 }, Forester.tree_factory.node_from_content(number: 1).content)
   end
 
   private
 
-  def from_root_hash(hash, options = {})
-    Forester::TreeFactory.from_root_hash(hash['root'], options)
+  def from_root_hash(root_hash, options = {})
+    Forester.tree_factory.from_root_hash(root_hash, options.merge(children_key: 'children'))
   end
-
 end

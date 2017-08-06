@@ -10,132 +10,155 @@ class TestValidators < Forester::Test
     }
 
     ['name', :name, 'special', 'ghost'].each do |field|
-      actual = tree.validate_uniqueness_of_field(field)
+      actual = validate_uniqueness_of_field(field)
       assert_equal expected, actual
     end
-
   end
 
   def test_validate_uniqueness_of_field_color
     expected = {
       is_valid: false,
       repeated: {
-        :color => ['Green', 'Yellow']
+        'color' => ['Green', 'Yellow']
         },
       failures: {
-        :color => {
-          'Green'  => ['First node of level 1', 'Second node of level 1'],
-          'Yellow' => ['First node of level 4', 'Second node of level 4']
+        'color' => {
+          'Green'  => ['First node of depth 1', 'Second node of depth 1'],
+          'Yellow' => ['First node of depth 4', 'Second node of depth 4']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_field(:color)
+    actual = validate_uniqueness_of_field('color')
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_field_color_first_failure_only
+  def test_validate_uniqueness_of_field_color_first_failure_only1
     expected = {
       is_valid: false,
       repeated: {
-        :color => ['Green']
+        'color' => ['Green']
         },
       failures: {
-        :color => {
-          'Green'  => ['First node of level 1', 'Second node of level 1']
+        'color' => {
+          'Green'  => ['First node of depth 1', 'Second node of depth 1']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_field(:color, {
+    actual = validate_uniqueness_of_field('color', {
       first_failure_only: true
     })
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_field_color_among_siblings_of_level_1
+  def test_validate_uniqueness_of_field_color_first_failure_only2
     expected = {
       is_valid: false,
       repeated: {
-        :color => ['Green']
+        'color' => ['Green']
         },
       failures: {
-        :color => {
-          'Green' => ['First node of level 1', 'Second node of level 1']
+        'color' => {
+          'Green'  => ['First node of depth 1', 'Second node of depth 1']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_field(:color, {
-      among_siblings_of_level: 1
+    actual = simple_tree.validate_uniqueness_of_field('color', {
+      first_failure_only: true
+    })
+
+    actual[:failures]['color']['Green'] = actual[:failures]['color']['Green'].map do |node|
+      node.get('name')
+    end
+
+    assert_equal expected, actual
+  end
+
+  def test_validate_uniqueness_of_field_color_among_siblings_of_depth_1
+    expected = {
+      is_valid: false,
+      repeated: {
+        'color' => ['Green']
+        },
+      failures: {
+        'color' => {
+          'Green' => ['First node of depth 1', 'Second node of depth 1']
+        }
+      }
+    }
+
+    actual = validate_uniqueness_of_field('color', {
+      among_siblings_of_depth: 1
     })
 
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_field_color_among_siblings_of_level_2
+  def test_validate_uniqueness_of_field_color_among_siblings_of_depth_2
     expected = {
       is_valid: true,
       repeated: {},
       failures: {}
     }
 
-    actual = tree.validate_uniqueness_of_field(:color, {
-      among_siblings_of_level: 2
+    actual = validate_uniqueness_of_field('color', {
+      among_siblings_of_depth: 2
     })
 
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_field_color_within_subtrees_of_level_1
+  def test_validate_uniqueness_of_field_color_within_subtrees_of_depth_1
     expected = {
       is_valid: false,
       repeated: {
-        :color => ['Yellow']
+        'color' => ['Yellow']
         },
       failures: {
-        :color => {
-          'Yellow' => ['First node of level 4', 'Second node of level 4']
+        'color' => {
+          'Yellow' => ['First node of depth 4', 'Second node of depth 4']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_field(:color, {
-      within_subtrees_of_level: 1,
+    actual = validate_uniqueness_of_field('color', {
+      within_subtrees_of_depth: 1,
     })
 
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_field_color_within_subtrees_of_level_3
+  def test_validate_uniqueness_of_field_color_within_subtrees_of_depth_3
     expected = {
       is_valid: false,
       repeated: {
-        :color => ['Yellow']
+        'color' => ['Yellow']
         },
       failures: {
-        :color => {
-          'Yellow' => ['First node of level 4', 'Second node of level 4']
+        'color' => {
+          'Yellow' => ['First node of depth 4', 'Second node of depth 4']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_field(:color, {
-      within_subtrees_of_level: 3,
+    actual = validate_uniqueness_of_field('color', {
+      within_subtrees_of_depth: 3,
     })
 
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_field_color_within_subtrees_of_level_4
+  def test_validate_uniqueness_of_field_color_within_subtrees_of_depth_4
     expected = {
       is_valid: true,
       repeated: {},
       failures: {}
     }
 
-    actual = tree.validate_uniqueness_of_field(:color, {
-      within_subtrees_of_level: 4,
+    actual = validate_uniqueness_of_field('color', {
+      within_subtrees_of_depth: 4,
     })
 
     assert_equal expected, actual
@@ -149,26 +172,38 @@ class TestValidators < Forester::Test
         },
       failures: {
         'color' => {
-          'Green'  => ['First node of level 1', 'Second node of level 1'],
-          'Yellow' => ['First node of level 4', 'Second node of level 4']
+          'Green'  => ['First node of depth 1', 'Second node of depth 1'],
+          'Yellow' => ['First node of depth 4', 'Second node of depth 4']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_fields(['name', 'color'])
+    actual = validate_uniqueness_of_fields(['name', 'color'])
 
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_combination_of_fields_name_color
+  def test_validate_uniqueness_of_fields_combination_name_color
     expected = {
       is_valid: true,
       repeated: {},
       failures: {}
     }
 
-    actual = tree.validate_uniqueness_of_fields(['name', 'color'], {
-      combination: true
+    actual = validate_uniqueness_of_fields_combination(['name', 'color'])
+
+    assert_equal expected, actual
+  end
+
+  def test_validate_uniqueness_of_fields_combination_name_color_among_siblings
+    expected = {
+      is_valid: true,
+      repeated: {},
+      failures: {}
+    }
+
+    actual = validate_uniqueness_of_fields_combination(['name', 'color'], {
+      among_siblings_of_depth: 2
     })
 
     assert_equal expected, actual
@@ -182,12 +217,12 @@ class TestValidators < Forester::Test
         },
       failures: {
         'color' => {
-          'Green' => ['First node of level 1', 'Second node of level 1']
+          'Green' => ['First node of depth 1', 'Second node of depth 1']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_fields(['color', 'tone'], {
+    actual = validate_uniqueness_of_fields(['color', 'tone'], {
       first_failure_only: true
     })
 
@@ -203,21 +238,21 @@ class TestValidators < Forester::Test
         },
       failures: {
         'color' => {
-          'Green'  => ['First node of level 1', 'Second node of level 1'],
-          'Yellow' => ['First node of level 4', 'Second node of level 4']
+          'Green'  => ['First node of depth 1', 'Second node of depth 1'],
+          'Yellow' => ['First node of depth 4', 'Second node of depth 4']
         },
         'tone' => {
-          'Dark' => ['First node of level 1', 'Second node of level 1']
+          'Dark' => ['First node of depth 1', 'Second node of depth 1']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_fields(['color', 'tone'])
+    actual = validate_uniqueness_of_fields(['color', 'tone'])
 
     assert_equal expected, actual
   end
 
-  def test_validate_uniqueness_of_combination_of_fields_color_tone
+  def test_validate_uniqueness_of_fields_combination_color_tone
     expected = {
       is_valid: false,
       repeated: {
@@ -225,16 +260,34 @@ class TestValidators < Forester::Test
         },
       failures: {
         ['color', 'tone'] => {
-          ['Green', 'Dark'] => ['First node of level 1', 'Second node of level 1']
+          ['Green', 'Dark'] => ['First node of depth 1', 'Second node of depth 1']
         }
       }
     }
 
-    actual = tree.validate_uniqueness_of_fields(['color', 'tone'], {
-      combination: true
-    })
+    actual = validate_uniqueness_of_fields_combination(['color', 'tone'])
 
     assert_equal expected, actual
+  end
+
+  private
+
+  def validate_uniqueness_of_field(field, options = {})
+    simple_tree.validate_uniqueness_of_field(field, validator_options.merge(options))
+  end
+
+  def validate_uniqueness_of_fields(fields, options = {})
+    simple_tree.validate_uniqueness_of_fields(fields, validator_options.merge(options))
+  end
+
+  def validate_uniqueness_of_fields_combination(fields, options = {})
+    simple_tree.validate_uniqueness_of_fields_combination(fields, validator_options.merge(options))
+  end
+
+  def validator_options
+    {
+      as_failure: ->(node) { node.get('name') }
+    }
   end
 
 end

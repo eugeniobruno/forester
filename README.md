@@ -6,25 +6,7 @@
 [![Code Climate](https://codeclimate.com/github/eugeniobruno/forester.svg)](https://codeclimate.com/github/eugeniobruno/forester)
 [![Dependency Status](https://gemnasium.com/eugeniobruno/forester.svg)](https://gemnasium.com/eugeniobruno/forester)
 
-Based on *rubytree*, this gem lets you build trees and run queries against them.
-
-## FAQ
-
-- What's the difference between forester and rubytree?
-
-The main class provided by the *rubytree* gem is **Tree::TreeNode**. In the case of forester, it is **Forester::TreeNode**, which is nothing more than a subclass of the former.
-
-- Why is this a separate gem and not just a pull request in rubytree?
-
-Because I needed to develop a certain feature on top of TreeNode in a time-sensitive manner. Rubytree devs should feel free to take anything they like from this project.
-
-- Why is forester not a fork of rubytree?
-
-Because I didn't feel the need to copy the whole codebase. All I needed was to extend the functionality of a class.
-
-- What can I do with forester?
-
-Everything you can do with rubytree, possibly in a more intention-revealing way, plus some configurable aggregations on trees. Simple examples can be found in the tests.
+Forester's functionality is a superset of [RubyTree](https://github.com/evolve75/RubyTree)'s that further facilitates the work with tree data structures at the right level of abstraction.
 
 ## Installation
 
@@ -42,12 +24,62 @@ Or install it yourself as:
 
 ## Usage
 
-Build your tree with any of the factory methods in TreeFactory, and then start messaging the resulting instance of TreeNode.
+Here is a simple example:
+
+```ruby
+serialized_tree = {
+  label: 'anything',
+  count: 0,
+  children: [
+    {
+      label: 'first child',
+      count: 1,
+      children: [
+        {
+          label: 'first grandchild',
+          count: 3
+        }
+      ]
+    },
+    {
+      label: 'second child',
+      count: 2
+    }
+  ]
+}
+
+# Any node can have any set of fields
+
+tree = Forester.tree_factory.from_root_hash(serialized_tree, children_key: :children)
+
+all_counts = tree.each_node(traversal: :breadth_first).map { |n| n.get(:count) }
+# [0, 1, 2, 3]
+
+tree.add_child_content(label: 'third child')
+
+tree.validate_uniqueness_of_field(:label)
+# { is_valid: true, repeated: {}, failures: {} }
+
+tree.as_root_hash
+# a hash with the same structure as serialized_tree
+```
+
+The full set of utilities are covered with unit tests, which also serve as usage examples.
+
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+Bug reports and pull requests are welcome on GitHub at https://github.com/eugeniobruno/forester. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+
